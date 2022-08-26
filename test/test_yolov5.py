@@ -1,6 +1,5 @@
 from app.handlers.yolov5.handler import YoloV5
 
-
 cat_pic = "http://cat_server:8888/cat"
 
 

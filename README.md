@@ -2,6 +2,12 @@
 
 Simple Python webserver that runs inference on images given a URL.
 
+Features
+
+- yolov5s
+- Flask + API key auth
+- gunicorn + Docker images for serving
+
 ## Usage
 
 POST `/infer`, with Authorization header
