@@ -1,0 +1,4 @@
+yolov5*.pt
+.mypy_cache
+.vscode
+__pycache__

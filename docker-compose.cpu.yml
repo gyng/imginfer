@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  server:
+    restart: always
+    environment:
+      - TORCH_CUDA=cpu
+      - API_KEY=${API_KEY}
+    build:
+      context: .
+    ports:
+      - 8080:8080

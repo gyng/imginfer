@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  server:
+    extends:
+      file: docker-compose.cpu.yml
+      service: server
+    command: ["bash", "do-test.sh"]
