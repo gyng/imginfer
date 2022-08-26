@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Dict, Optional
 
@@ -30,7 +31,11 @@ def make_app(*, api_key: Optional[str]) -> Flask:
                         r"""{ "uri": "www.example.com/image_url.jpg" }""",
                         r"""curl -X POST http://localhost:8080/infer -H 'Content-Type: application/json' -H 'Authorization: Bearer <API_KEY>' -d '{ "uri": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Cat_poster_1.jpg/390px-Cat_poster_1.jpg" }'""",  # noqa: E501
                     ],
-                }
+                },
+                {
+                    "methods": ["GET"],
+                    "path": "/healthcheck",
+                },
             ],
             "auth_required": api_key is not None,
         }
@@ -45,12 +50,8 @@ def make_app(*, api_key: Optional[str]) -> Flask:
             if token != api_key:
                 return {"error": "unauthorized"}, 401  # type: ignore
 
-        content_type = request.headers.get("Content-Type")
-        if content_type != "application/json":
-            return {"error": f"bad content-type {content_type}"}, 400  # type: ignore
-
         try:
-            req_json = request.json
+            req_json = json.loads(request.data)
             if req_json is None or req_json.get("uri") is None:
                 return {"error": "bad request"}, 400  # type: ignore
         except Exception as e:

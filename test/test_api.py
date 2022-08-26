@@ -66,15 +66,6 @@ def test_api_infer_invalid_request_json(public_app: Flask):
     assert res_json["error"] == "bad request"
 
 
-def test_api_infer_invalid_request_content_type(public_app: Flask):
-    res = public_app.test_client().post(
-        "/infer", headers={"content-type": "text/plain"}
-    )
-    assert res.status_code == 400
-    res_json = json.loads(res.data.decode("utf-8"))
-    assert res_json["error"] == "bad content-type text/plain"
-
-
 def test_api_infer_invalid_image(public_app: Flask):
     res = public_app.test_client().post("/infer", json={"uri": cat_meow})
     assert res.status_code == 500
