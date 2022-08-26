@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Optional
 
 from flask import Flask, request
@@ -51,18 +52,24 @@ def make_app(*, api_key: Optional[str]) -> Flask:
         if content_type != "application/json":
             return {"error": f"bad content-type {content_type}"}, 400  # type: ignore
 
-        req_json = request.json
-        if req_json is not None:
-            if not handlers.get("yolov5"):
-                return {"error": "yolov5 not initialized"}, 500  # type: ignore
+        try:
+            req_json = request.json
+            if req_json is None or req_json.get("uri") is None:
+                return {"error": "bad request"}, 400  # type: ignore
+        except Exception as e:
+            logging.info(e)
+            return {"error": "bad request"}, 400  # type: ignore
 
-            try:
-                yolov5 = handlers["yolov5"].infer(req_json["uri"])
-            except InferError as e:
-                return {"error": e.message}, 500  # type: ignore
+        if handlers.get("yolov5") is None:
+            return {"error": "yolov5 not initialized"}, 500  # type: ignore
+
+        try:
+            yolov5 = handlers["yolov5"].infer(req_json["uri"])
+        except InferError as e:
+            return {"error": e.message}, 500  # type: ignore
 
         if not yolov5:
-            return {"error": "Inference failed"}, 500  # type: ignore
+            return {"error": "inference failed"}, 500  # type: ignore
 
         return {"yolov5": yolov5}, 200  # type: ignore
 

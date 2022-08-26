@@ -50,6 +50,31 @@ def test_api_infer(public_app: Flask):
     assert res_json["yolov5"]["results"]
 
 
+def test_api_infer_missing_uri(public_app: Flask):
+    res = public_app.test_client().post("/infer", json={"foo": "bar"})
+    assert res.status_code == 400
+    res_json = json.loads(res.data.decode("utf-8"))
+    assert res_json["error"] == "bad request"
+
+
+def test_api_infer_invalid_request_json(public_app: Flask):
+    res = public_app.test_client().post(
+        "/infer", headers={"content-type": "application/json"}
+    )
+    assert res.status_code == 400
+    res_json = json.loads(res.data.decode("utf-8"))
+    assert res_json["error"] == "bad request"
+
+
+def test_api_infer_invalid_request_content_type(public_app: Flask):
+    res = public_app.test_client().post(
+        "/infer", headers={"content-type": "text/plain"}
+    )
+    assert res.status_code == 400
+    res_json = json.loads(res.data.decode("utf-8"))
+    assert res_json["error"] == "bad content-type text/plain"
+
+
 def test_api_infer_invalid_image(public_app: Flask):
     res = public_app.test_client().post("/infer", json={"uri": cat_meow})
     assert res.status_code == 500
@@ -58,10 +83,10 @@ def test_api_infer_invalid_image(public_app: Flask):
 
 
 def test_api_infer_invalid_uri(public_app: Flask):
-    res = public_app.test_client().post("/infer", json={"uri": None})
+    res = public_app.test_client().post("/infer", json={"uri": "rubbish"})
     assert res.status_code == 500
     res_json = json.loads(res.data.decode("utf-8"))
-    assert res_json["error"] == "bad url: None"
+    assert res_json["error"] == "could not infer rubbish"
 
 
 def test_api_infer_auth(private_app: Flask):
