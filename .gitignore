@@ -3,3 +3,4 @@ yolov5*.pt
 .vscode
 __pycache__
 .pytest_cache
+.env

@@ -40,6 +40,16 @@ Response
 }
 ```
 
+### Environment variables
+
+`.env` is supported.
+
+|Key|Default value|
+|-|-|
+|`API_KEY`|`""` (auth disabled)|
+|`HOST`|`"0.0.0.0"`|
+|`PORT`|`"8080"`|
+
 ## Local install
 
 ```bash
