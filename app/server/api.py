@@ -30,12 +30,9 @@ def make_app(*, api_key: Optional[str]) -> Flask:
                         r"""{ "uri": "www.example.com/image_url.jpg" }""",
                         r"""curl -X POST http://localhost:8080/infer -H 'Content-Type: application/json' -H 'Authorization: Bearer <API_KEY>' -d '{ "uri": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Cat_poster_1.jpg/390px-Cat_poster_1.jpg" }'""",  # noqa: E501
                     ],
-                },
-                {
-                    "methods": ["GET"],
-                    "path": "/cat",
-                },
-            ]
+                }
+            ],
+            "auth_required": api_key is not None,
         }
 
     @app.route("/infer", methods=["POST"])
