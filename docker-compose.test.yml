@@ -6,3 +6,21 @@ services:
       file: docker-compose.cpu.yml
       service: server
     command: ["bash", "do-test.sh"]
+    depends_on:
+      - cat_server
+    tty: true
+
+  cat_server:
+    environment:
+      - PYTHONUNBUFFERED=TRUE
+    build:
+      context: test/server
+    ports:
+      - "8888:8888"
+    command: ["python", "cat_server.py"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/cat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

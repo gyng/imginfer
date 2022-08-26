@@ -44,6 +44,7 @@ psutil  # system utilization
 
 # imginfer
 flask==2.2.2
+gunicorn==20.1.0
 
 # Dev dependencies
 mypy==0.971 

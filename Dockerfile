@@ -14,8 +14,18 @@ RUN pip install -r requirements.txt
 COPY ./install-torch.sh .
 RUN ["./install-torch.sh", "$TORCH_CUDA"]
 
+# Minor optimisation to cache model downloads
+COPY app/handlers app/handlers/
+COPY preload_models.py .
+RUN ["python", "preload_models.py"]
+
 COPY . .
 
 EXPOSE 8080
 
-CMD ["python", "main.py"]
+# Used for dev
+# CMD ["python", "main.py"]
+
+# Used for production
+# workers=1 so we don't load duplicate models to save resources
+CMD ["gunicorn", "--workers=1", "--threads=1", "--bind=0.0.0.0:8080", "--log-level=debug", "--access-logfile=-", "main:flask_app"]

@@ -9,6 +9,11 @@ class Result:
     results: List[dict]
 
 
+@dataclass
+class InferError(Exception):
+    message: str
+
+
 class Handler(ABC):
     @abstractmethod
     def infer(self, url: str) -> Result:

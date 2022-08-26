@@ -76,8 +76,14 @@ $ API_KEY=letmein docker-compose -f docker-compose.cuda.yml up --build
 
 ## Test & lint
 
+The test suite is running integration tests so it is recommended that you use `docker-compose.test.yml` to run the tests.
+It starts up a Flask server that serves an image for the test suite to run against.
+
 ```bash
 $ do-test.sh
 $ docker-compose -f docker-compose.test.yml up --build --exit-code-from server
+$ do-lint-fix.sh
+
+$ docker-compose -f docker-compose.test.yml up --build cat_server
 $ python -m pytest
 ```
