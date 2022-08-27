@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List
+from typing import Any, List
 
 
 @dataclass
 class Result:
     str_repr: str
-    results: List[dict]
+    results: List[Any]
 
 
 @dataclass
@@ -16,5 +16,5 @@ class InferError(Exception):
 
 class Handler(ABC):
     @abstractmethod
-    def infer(self, url: str) -> Result:
+    def infer(self, path: str) -> Result:
         return NotImplemented

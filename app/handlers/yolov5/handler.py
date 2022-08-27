@@ -11,15 +11,15 @@ class YoloV5(Handler):
     def __init__(self, variant="yolov5s"):
         self.model = torch.hub.load("ultralytics/yolov5", variant)
 
-    def infer(self, url: str) -> Result:
-        if not url:
-            raise InferError(message=f"bad url: {url}")
+    def infer(self, filepath: str) -> Result:
+        if not filepath:
+            raise InferError(message=f"bad filepath: {filepath}")
 
         try:
-            results = self.model([url])
+            results = self.model([filepath])
         except Exception as e:
             logging.error(e)
-            raise InferError(message=f"could not infer {url}")
+            raise InferError(message="could not infer yolov5")
 
         # yolov5 prints results to stdout instead when doing str()
         f = io.StringIO()

@@ -1,10 +1,26 @@
+# imginfer
+flask==2.2.2
+gunicorn==20.1.0
+types-requests==2.28.9
+
+# Dev dependencies
+mypy==0.971 
+black==22.6.0
+pytest==7.1.2
+flake8==5.0.4
+isort==5.10.1
+python-dotenv==0.20.0
+
+# easyocr
+easyocr==1.6.0
+
 # YOLOv5 requirements
 # Usage: pip install -r requirements.txt
 
 # Base ----------------------------------------
 matplotlib>=3.2.2
 numpy>=1.18.5
-opencv-python>=4.1.1
+opencv-python==4.5.4.60  # easyocr needs <= 4.5.4.60
 Pillow>=7.1.2
 PyYAML>=5.3.1
 requests>=2.23.0
@@ -41,15 +57,3 @@ psutil  # system utilization
 # albumentations>=1.0.3
 # pycocotools>=2.0  # COCO mAP
 # roboflow
-
-# imginfer
-flask==2.2.2
-gunicorn==20.1.0
-
-# Dev dependencies
-mypy==0.971 
-black==22.6.0
-pytest==7.1.2
-flake8==5.0.4
-isort==5.10.1
-python-dotenv==0.20.0

@@ -4,7 +4,7 @@ Simple Python webserver that runs inference on images given a URL.
 
 Features
 
-- yolov5s
+- [yolov5s](https://github.com/ultralytics/yolov5), [EasyOCR](https://github.com/JaidedAI/EasyOCR)
 - Flask + API key auth
 - gunicorn + Docker images for serving
 

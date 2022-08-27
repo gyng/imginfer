@@ -18,5 +18,12 @@ def meow():
     return "meow", 200
 
 
+@app.route("/textpic", methods=["GET"])
+def textpic():
+    current = pathlib.Path(__file__).parent.resolve()
+    cat_path = path.join(current, "text.png")
+    return send_file(cat_path, mimetype="image/png"), 200  # type: ignore
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8888, debug=False)

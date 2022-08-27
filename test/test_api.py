@@ -50,6 +50,25 @@ def test_api_infer(public_app: Flask):
     assert res_json["yolov5"]["results"]
 
 
+def test_api_infer_specific_models(public_app: Flask):
+    res = public_app.test_client().post(
+        "/infer", json={"uri": cat_pic, "models": ["yolov5"]}
+    )
+    assert res.status_code == 200
+    res_json = json.loads(res.data.decode("utf-8"))
+    assert res_json.get("yolov5") is not None
+    assert res_json.get("easyocr") is None
+
+
+def test_api_infer_bad_models(public_app: Flask):
+    res = public_app.test_client().post(
+        "/infer", json={"uri": cat_pic, "models": "cat"}
+    )
+    assert res.status_code == 200
+    res_json = json.loads(res.data.decode("utf-8"))
+    assert res_json.get("models") == []
+
+
 def test_api_infer_missing_uri(public_app: Flask):
     res = public_app.test_client().post("/infer", json={"foo": "bar"})
     assert res.status_code == 400
@@ -70,14 +89,14 @@ def test_api_infer_invalid_image(public_app: Flask):
     res = public_app.test_client().post("/infer", json={"uri": cat_meow})
     assert res.status_code == 500
     res_json = json.loads(res.data.decode("utf-8"))
-    assert res_json["error"] == f"could not infer {cat_meow}"
+    assert res_json["error"] == "could not infer yolov5"
 
 
 def test_api_infer_invalid_uri(public_app: Flask):
     res = public_app.test_client().post("/infer", json={"uri": "rubbish"})
-    assert res.status_code == 500
+    assert res.status_code == 400
     res_json = json.loads(res.data.decode("utf-8"))
-    assert res_json["error"] == "could not infer rubbish"
+    assert res_json["error"] == "failed to retrieve image"
 
 
 def test_api_infer_auth(private_app: Flask):
