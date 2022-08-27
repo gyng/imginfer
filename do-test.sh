@@ -2,6 +2,7 @@
 set -euox pipefail
 
 pytest . --showlocals
+curl http://cat_server:8888/shutdown || true
 
 python3 -m black . --check
 

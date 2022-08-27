@@ -1,3 +1,4 @@
+import os
 import pathlib
 from os import path
 
@@ -23,6 +24,11 @@ def textpic():
     current = pathlib.Path(__file__).parent.resolve()
     cat_path = path.join(current, "text.png")
     return send_file(cat_path, mimetype="image/png"), 200  # type: ignore
+
+
+@app.get("/shutdown")
+def shutdown():
+    os._exit(0)
 
 
 if __name__ == "__main__":
