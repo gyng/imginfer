@@ -8,7 +8,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --progress-bar off
 
 # Set TORCH_CUDA to cu113, cu116, or cpu by default
 COPY ./install-torch.sh .
