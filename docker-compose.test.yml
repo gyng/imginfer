@@ -5,7 +5,7 @@ services:
     extends:
       file: docker-compose.cpu.yml
       service: server
-    command: ["bash", "do-test.sh"]
+    command: ["bash", "do-test.sh", "&&", "exit", "0"]
     depends_on:
       - cat_server
     tty: true
