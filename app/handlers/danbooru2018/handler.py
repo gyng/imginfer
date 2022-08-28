@@ -54,24 +54,24 @@ class Danbooru2018(Handler):
             with torch.no_grad():
                 output = self.model(input_batch)
                 output = torch.sigmoid(output[0])
+
+            def to_table(probs, thresh=0.4):
+                tmp = probs[probs > thresh]
+                inds = probs.argsort(descending=True)
+                table = []
+                for i in inds[0 : len(tmp)]:
+                    table.append([self.class_names[i], float(probs[i])])
+                return table
+
+            threshold = 0.4
+            results = to_table(output, threshold)
+
+            row_strings = []
+            for [cls, p] in results:
+                row_strings.append(f"{cls}: {'{:.3g}'.format(p)}")
+            str_repr = ", ".join(row_strings)
+
+            return Result(str_repr, [results])
         except Exception as e:
-            logging.error(e)
+            logging.error(e, exc_info=True)
             raise InferError(message="could not infer danbooru2018")
-
-        def to_table(probs, thresh=0.4):
-            tmp = probs[probs > thresh]
-            inds = probs.argsort(descending=True)
-            table = []
-            for i in inds[0 : len(tmp)]:
-                table.append([self.class_names[i], float(probs[i])])
-            return table
-
-        threshold = 0.4
-        results = to_table(output, threshold)
-
-        row_strings = []
-        for [cls, p] in results:
-            row_strings.append(f"{cls}: {'{:.3g}'.format(p)}")
-        str_repr = ", ".join(row_strings)
-
-        return Result(str_repr, [results])

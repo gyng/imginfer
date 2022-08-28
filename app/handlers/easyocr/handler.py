@@ -13,6 +13,8 @@ class EasyOCR(Handler):
         if not filepath:
             raise InferError(message=f"bad filepath: {filepath}")
 
+        threshold = 0.25
+
         try:
             output = self.model.readtext(filepath, output_format="dict")
             json_safe_output = [
@@ -22,10 +24,11 @@ class EasyOCR(Handler):
                     "confident": x["confident"],
                 }
                 for x in output
+                if x["confident"] > threshold
             ]
             str_repr = " ".join(x["text"] for x in json_safe_output)
-        except Exception as e:
-            logging.error(e)
-            raise InferError(message="could not infer easyocr")
 
-        return Result(str_repr, json_safe_output)
+            return Result(str_repr, json_safe_output)
+        except Exception as e:
+            logging.error(e, exc_info=True)
+            raise InferError(message="could not infer easyocr")

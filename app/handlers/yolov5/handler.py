@@ -17,17 +17,16 @@ class YoloV5(Handler):
 
         try:
             results = self.model([filepath])
+            # yolov5 prints results to stdout instead when doing str()
+            f = io.StringIO()
+            with contextlib.redirect_stdout(f):
+                str(results)
+            output = f.getvalue()
+
+            pandas = results.pandas()
+            serialized = pandas.xyxy[0].to_dict(orient="records")
+
+            return Result(output, serialized)
         except Exception as e:
-            logging.error(e)
+            logging.error(e, exc_info=True)
             raise InferError(message="could not infer yolov5")
-
-        # yolov5 prints results to stdout instead when doing str()
-        f = io.StringIO()
-        with contextlib.redirect_stdout(f):
-            str(results)
-        output = f.getvalue()
-
-        pandas = results.pandas()
-        serialized = pandas.xyxy[0].to_dict(orient="records")
-
-        return Result(output, serialized)
