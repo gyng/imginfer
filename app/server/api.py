@@ -87,42 +87,16 @@ def make_app(*, api_key: Optional[str]) -> Flask:
                 logging.warn(e)
                 return {"error": "failed to download"}, 400  # type: ignore
 
-            # TODO: DRY this out
-            # yolov5
-            if "yolov5" in enabled_models:
-                if handlers.get("yolov5") is None:
-                    return {"error": "yolov5 not initialized"}, 500  # type: ignore
+            for mod in enabled_models:
+                if handlers.get(mod) is None:
+                    return {"error": f"{mod} not initialized"}, 500  # type: ignore
                 try:
-                    yolov5 = handlers["yolov5"].infer(ntf.name)
+                    yolov5 = handlers[mod].infer(ntf.name)
+                    if not yolov5:
+                        response[mod] = {"error": "inference failed"}
+                    response[mod] = yolov5  # type: ignore
                 except InferError as e:
-                    return {"error": e.message}, 500  # type: ignore
-                if not yolov5:
-                    return {"error": "inference failed"}, 500  # type: ignore
-                response["yolov5"] = yolov5  # type: ignore
-
-            # easyocr
-            if "easyocr" in enabled_models:
-                if handlers.get("easyocr") is None:
-                    return {"error": "easyocr not initialized"}, 500  # type: ignore
-                try:
-                    easyocr = handlers["easyocr"].infer(ntf.name)
-                except InferError as e:
-                    return {"error": e.message}, 500  # type: ignore
-                if not easyocr:
-                    return {"error": "inference failed"}, 500  # type: ignore
-                response["easyocr"] = easyocr
-
-            # easyocr
-            if "danbooru2018" in enabled_models:
-                if handlers.get("danbooru2018") is None:
-                    return {"error": "danbooru2018 not initialized"}, 500  # type: ignore  # noqa: E501
-                try:
-                    danbooru2018 = handlers["danbooru2018"].infer(ntf.name)
-                except InferError as e:
-                    return {"error": e.message}, 500  # type: ignore
-                if not danbooru2018:
-                    return {"error": "inference failed"}, 500  # type: ignore
-                response["danbooru2018"] = danbooru2018
+                    response[mod] = {"error": e.message}
 
             return response, 200  # type: ignore
 
