@@ -11,4 +11,4 @@ def test_infer_easyocr():
         download_into(pic, ntf, resize=(512, 512))
         handler = Danbooru2018()
         result = handler.infer(ntf.name)
-        assert result.str_repr.startswith("hinanawi_tenshi")
+        assert result.str_repr.startswith("age_rating_s")

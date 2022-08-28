@@ -1,4 +1,4 @@
-# Danbooru2018 pretrained modeul: M Baas
+# Danbooru2018 pretrained model: M Baas (https://github.com/RF5/danbooru-pretrained)
 
 import json
 import logging
@@ -7,7 +7,8 @@ import os
 import torch
 from PIL import Image
 from torchvision import transforms
-from torchvision.models import resnet50
+
+from app.handlers.danbooru2018.cpu import resnet50
 
 from .. import Handler, InferError, Result
 
@@ -20,16 +21,8 @@ class Danbooru2018(Handler):
             self.class_names = json.loads(f.read())
 
         if not torch.cuda.is_available():
-            pretrained_weights = torch.hub.load_state_dict_from_url(
-                "https://github.com/RF5/danbooru-pretrained/releases/download/v0.1/resnet50-13306192.pth",  # noqa: E501
-                progress=True,
-                map_location="cpu",
-            )
-            self.model = resnet50(pretrained=True)
-            self.model.load_state_dict(pretrained_weights, strict=False)
+            self.model = resnet50()
             self.model.eval()
-            # self.model = self.model.model.load_state_dict(state_dict)
-            # self.model = resnet50(weights=state)
         else:
             self.model = torch.hub.load("RF5/danbooru-pretrained", "resnet50")
             self.model.eval()
