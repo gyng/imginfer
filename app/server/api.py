@@ -73,7 +73,7 @@ def make_app(*, api_key: Optional[str]) -> Flask:
             logging.info(e)
             return {"error": "bad request"}, 400  # type: ignore
 
-        enabled_models = req_json.get("models", ["yolov5", "easyocr"])
+        enabled_models = req_json.get("models", ["yolov5", "easyocr", "danbooru2018"])
         if not isinstance(enabled_models, list) or len(enabled_models) == 0:
             return {"models": []}, 200  # type: ignore
 
