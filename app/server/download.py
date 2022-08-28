@@ -1,6 +1,6 @@
-from io import BytesIO
 import logging
 import shutil
+from io import BytesIO
 from typing import Any, Optional, Tuple
 
 import requests
@@ -18,9 +18,18 @@ def download_into(
     resize: max bounds eg, (512, 512)
     """
     try:
-        response = requests.get(url, stream=True)
+        response = requests.get(
+            url,
+            stream=True,
+            headers={
+                # Safari
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_5_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6 Safari/605.1.15"  # noqa: E501
+            },
+        )
+        if response.status_code >= 400:
+            raise InferError("failed to retrieve image, code >= 400")
     except Exception as e:
-        logging.error(f"Failed to download url {url}")
+        logging.error(f"failed to download url {url}")
         logging.error(e)
         raise InferError("failed to retrieve image")
     with open(tmp.name, "wb") as out_file:
