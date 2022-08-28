@@ -68,7 +68,7 @@ class Danbooru2018(Handler):
 
             row_strings = []
             for [cls, p] in results:
-                row_strings.append(f"{cls}: {'{:.3g}'.format(p)}")
+                row_strings.append(f"{cls}: {'{:.2g}'.format(p)}")
             str_repr = ", ".join(row_strings)
 
             return Result(str_repr, [results])
