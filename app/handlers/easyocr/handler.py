@@ -6,7 +6,7 @@ from .. import Handler, InferError, Result
 
 
 class EasyOCR(Handler):
-    def __init__(self, languages=["en", "ja"]):
+    def __init__(self, languages=["en"]):
         self.model = easyocr.Reader(languages)
 
     def infer(self, filepath: str) -> Result:
