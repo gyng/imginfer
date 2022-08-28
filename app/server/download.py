@@ -10,11 +10,11 @@ from app.handlers import InferError
 
 
 def download_into(
-    url: str, tmp: Any, *, resize: Optional[Tuple[int, int]] = (512, 512)
+    url: str, filehandle: Any, *, resize: Optional[Tuple[int, int]] = (512, 512)
 ):
     """
     url: eg, https://example.com/mypic.jpg
-    tmp: Tempfile.TemporaryNamedFile
+    filehandle: Tempfile.TemporaryNamedFile
     resize: max bounds eg, (512, 512)
     """
     try:
@@ -32,7 +32,7 @@ def download_into(
         logging.error(f"failed to download url {url}")
         logging.error(e)
         raise InferError("failed to retrieve image")
-    with open(tmp.name, "wb") as out_file:
+    with open(filehandle.name, "wb") as out_file:
         if resize is not None:
             im = Image.open(BytesIO(response.content))
             im.thumbnail(resize, Image.LANCZOS)

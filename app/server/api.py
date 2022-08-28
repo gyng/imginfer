@@ -1,7 +1,6 @@
 import json
 import logging
-import tempfile
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 from flask import Flask, request
 
@@ -9,7 +8,8 @@ from app.handlers import Handler, InferError
 from app.handlers.danbooru2018.handler import Danbooru2018
 from app.handlers.easyocr.handler import EasyOCR
 from app.handlers.yolov5.handler import YoloV5
-from app.server.download import download_into
+from app.server.auth import check_flask_auth_header
+from app.server.infer import infer
 
 handlers: Dict[str, Handler] = {}
 
@@ -31,7 +31,7 @@ def make_app(*, api_key: Optional[str]) -> Flask:
     app = Flask("imginfer")
 
     @app.route("/")
-    def home():
+    def home_route():
         return {
             "endpoints": [
                 {
@@ -56,14 +56,9 @@ def make_app(*, api_key: Optional[str]) -> Flask:
         }
 
     @app.route("/infer", methods=["POST"])
-    def infer() -> dict:
-        if api_key:
-            auth = request.headers.get("Authorization")
-            if not auth:
-                return {"error": "unauthorized"}, 401  # type: ignore
-            token = auth.replace("Bearer ", "")
-            if token != api_key:
-                return {"error": "unauthorized"}, 401  # type: ignore
+    def infer_route() -> dict:
+        if not check_flask_auth_header(api_key, request):
+            return {"error": "unauthorized"}, 401  # type: ignore
 
         try:
             req_json = json.loads(request.data)
@@ -74,34 +69,21 @@ def make_app(*, api_key: Optional[str]) -> Flask:
             return {"error": "bad request"}, 400  # type: ignore
 
         enabled_models = req_json.get("models", ["yolov5", "easyocr", "danbooru2018"])
-        if not isinstance(enabled_models, list) or len(enabled_models) == 0:
-            return {"models": []}, 200  # type: ignore
 
-        with tempfile.NamedTemporaryFile() as ntf:
-            try:
-                download_into(req_json["uri"], ntf, resize=(512, 512))
-                response: Dict[str, Any] = {"models": enabled_models}
-            except InferError as e:
-                return {"error": e.message}, 400  # type: ignore
-            except Exception as e:
-                logging.warn(e)
-                return {"error": "failed to download"}, 400  # type: ignore
+        try:
+            response = infer(
+                enabled_models=enabled_models,
+                uri=req_json["uri"],
+                handlers=handlers,
+                resize=(512, 512),
+            )
+        except InferError as e:
+            return {"error": e.message}, 400  # type: ignore
 
-            for mod in enabled_models:
-                if handlers.get(mod) is None:
-                    return {"error": f"{mod} not initialized"}, 500  # type: ignore
-                try:
-                    yolov5 = handlers[mod].infer(ntf.name)
-                    if not yolov5:
-                        response[mod] = {"error": "inference failed"}
-                    response[mod] = yolov5  # type: ignore
-                except InferError as e:
-                    response[mod] = {"error": e.message}
-
-            return response, 200  # type: ignore
+        return response, 200  # type: ignore
 
     @app.route("/healthcheck")
-    def healthcheck():
+    def healthcheck_route():
         return {"health": "ok"}, 200  # type: ignore
 
     return app
