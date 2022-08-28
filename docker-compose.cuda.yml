@@ -11,6 +11,7 @@ services:
       context: .
     ports:
       - 8080:8080
+    stop_grace_period: 30s
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/healthcheck"]
       interval: 30s
