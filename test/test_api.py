@@ -87,9 +87,9 @@ def test_api_infer_invalid_request_json(public_app: Flask):
 
 def test_api_infer_invalid_image(public_app: Flask):
     res = public_app.test_client().post("/infer", json={"uri": cat_meow})
-    assert res.status_code == 500
+    assert res.status_code == 400
     res_json = json.loads(res.data.decode("utf-8"))
-    assert res_json["error"] == "could not infer yolov5"
+    assert res_json["error"] == "failed to download"
 
 
 def test_api_infer_invalid_uri(public_app: Flask):

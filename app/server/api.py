@@ -75,7 +75,7 @@ def make_app(*, api_key: Optional[str]) -> Flask:
 
         with tempfile.NamedTemporaryFile() as ntf:
             try:
-                download_into(req_json["uri"], ntf)
+                download_into(req_json["uri"], ntf, resize=[512, 512])
                 response: Dict[str, Any] = {"models": enabled_models}
             except InferError as e:
                 return {"error": e.message}, 400  # type: ignore
