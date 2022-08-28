@@ -28,4 +28,4 @@ EXPOSE 8080
 
 # Used for production
 # workers=1 so we don't load duplicate models to save resources
-CMD ["gunicorn", "--workers=1", "--threads=1", "--bind=0.0.0.0:8080", "--log-level=debug", "--access-logfile=-", "main:flask_app"]
+CMD ["gunicorn", "--workers=1", "--threads=1", "--bind=0.0.0.0:8080", "--log-level=debug", "--access-logfile=-", "--timeout=90", "main:flask_app"]
