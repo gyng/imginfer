@@ -1,3 +1,4 @@
+from io import BytesIO
 import logging
 import shutil
 from typing import Any, Optional, Tuple
@@ -23,10 +24,11 @@ def download_into(
         logging.error(e)
         raise InferError("failed to retrieve image")
     with open(tmp.name, "wb") as out_file:
-        shutil.copyfileobj(response.raw, out_file)
         if resize is not None:
-            im = Image.open(out_file.name)
+            im = Image.open(BytesIO(response.content))
             im.thumbnail(resize, Image.LANCZOS)
             im.save(out_file.name, "BMP")
+        else:
+            shutil.copyfileobj(response.raw, out_file)
 
     del response
