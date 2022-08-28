@@ -21,4 +21,5 @@ flask_app = make_app(api_key=api_key)
 if __name__ == "__main__":
     host = os.environ.get("HOST", "0.0.0.0")
     port = os.environ.get("PORT", "8080")
-    flask_app.run(host=host, port=int(port))
+    debug = os.environ.get("DEBUG") is True
+    flask_app.run(host=host, port=int(port), debug=debug)

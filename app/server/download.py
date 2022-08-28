@@ -9,12 +9,12 @@ from app.handlers import InferError
 
 
 def download_into(
-    url: str, tmp: Any, *, resize: Optional[Tuple[int, int]] = [512, 512]
+    url: str, tmp: Any, *, resize: Optional[Tuple[int, int]] = (512, 512)
 ):
     """
     url: eg, https://example.com/mypic.jpg
     tmp: Tempfile.TemporaryNamedFile
-    resize: max bounds
+    resize: max bounds eg, (512, 512)
     """
     try:
         response = requests.get(url, stream=True)

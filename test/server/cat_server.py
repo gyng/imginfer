@@ -5,13 +5,13 @@ from os import path
 from flask import Flask, send_file
 
 app = Flask("cat_server")
+current = pathlib.Path(__file__).parent.resolve()
 
 
 @app.route("/cat", methods=["GET"])
 def cat():
-    current = pathlib.Path(__file__).parent.resolve()
-    cat_path = path.join(current, "cat.jpg")
-    return send_file(cat_path, mimetype="image/jpg"), 200  # type: ignore
+    picpath = path.join(current, "cat.jpg")
+    return send_file(picpath, mimetype="image/jpg"), 200  # type: ignore
 
 
 @app.route("/meow", methods=["GET"])
@@ -21,9 +21,14 @@ def meow():
 
 @app.route("/textpic", methods=["GET"])
 def textpic():
-    current = pathlib.Path(__file__).parent.resolve()
-    cat_path = path.join(current, "text.png")
-    return send_file(cat_path, mimetype="image/png"), 200  # type: ignore
+    picpath = path.join(current, "text.png")
+    return send_file(picpath, mimetype="image/png"), 200  # type: ignore
+
+
+@app.route("/anime", methods=["GET"])
+def anime():
+    picpath = path.join(current, "anime.jpg")
+    return send_file(picpath, mimetype="image/jpg"), 200  # type: ignore
 
 
 @app.get("/shutdown")

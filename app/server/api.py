@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional
 from flask import Flask, request
 
 from app.handlers import Handler, InferError
+from app.handlers.danbooru2018.handler import Danbooru2018
 from app.handlers.easyocr.handler import EasyOCR
 from app.handlers.yolov5.handler import YoloV5
 from app.server.download import download_into
@@ -20,6 +21,9 @@ def init_handlers():
     if not handlers.get("easyocr"):
         logging.info("initializing easyocr...")
         handlers["easyocr"] = EasyOCR()
+    if not handlers.get("danbooru2018"):
+        logging.info("initializing danbooru2018...")
+        handlers["danbooru2018"] = Danbooru2018()
     logging.info("done initializing models.")
 
 
@@ -48,7 +52,7 @@ def make_app(*, api_key: Optional[str]) -> Flask:
             ],
             "auth_required": api_key is not None,
             # TODO: make configurable
-            "models": ["yolov5", "easyocr"],
+            "models": ["yolov5", "easyocr", "danbooru2018"],
         }
 
     @app.route("/infer", methods=["POST"])
@@ -75,7 +79,7 @@ def make_app(*, api_key: Optional[str]) -> Flask:
 
         with tempfile.NamedTemporaryFile() as ntf:
             try:
-                download_into(req_json["uri"], ntf, resize=[512, 512])
+                download_into(req_json["uri"], ntf, resize=(512, 512))
                 response: Dict[str, Any] = {"models": enabled_models}
             except InferError as e:
                 return {"error": e.message}, 400  # type: ignore
@@ -107,6 +111,18 @@ def make_app(*, api_key: Optional[str]) -> Flask:
                 if not easyocr:
                     return {"error": "inference failed"}, 500  # type: ignore
                 response["easyocr"] = easyocr
+
+            # easyocr
+            if "danbooru2018" in enabled_models:
+                if handlers.get("danbooru2018") is None:
+                    return {"error": "danbooru2018 not initialized"}, 500  # type: ignore  # noqa: E501
+                try:
+                    danbooru2018 = handlers["danbooru2018"].infer(ntf.name)
+                except InferError as e:
+                    return {"error": e.message}, 500  # type: ignore
+                if not danbooru2018:
+                    return {"error": "inference failed"}, 500  # type: ignore
+                response["danbooru2018"] = danbooru2018
 
             return response, 200  # type: ignore
 
