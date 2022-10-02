@@ -55,7 +55,7 @@ class Danbooru2018(Handler):
                 output = self.model(input_batch)
                 output = torch.sigmoid(output[0])
 
-            def to_table(probs, thresh=0.4):
+            def to_table(probs, thresh=0.3):
                 tmp = probs[probs > thresh]
                 inds = probs.argsort(descending=True)
                 table = []
