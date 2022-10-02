@@ -63,7 +63,7 @@ class Danbooru2018(Handler):
                     table.append([self.class_names[i], float(probs[i])])
                 return table
 
-            threshold = 0.4
+            threshold = 0.3
             results = to_table(output, threshold)
 
             row_strings = []
